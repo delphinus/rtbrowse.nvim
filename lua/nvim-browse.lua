@@ -12,7 +12,7 @@ local function nvim_revision()
   local result = vim.api.nvim_exec2("version", { output = true })
   -- ex: NVIM v0.12.0-dev-5606+gcc78f88201-Homebrew
   local hash = result.output:match "NVIM v%d+%.%d+%.%d+%-%S+g([0-9a-f]+)"
-  return hash and { hash = hash } or { version = (result.output:match "NVIM v(%d+%.%d+%.%d+)") }
+  return hash and { hash = hash } or { version = (result.output:match "NVIM (v%d+%.%d+%.%d+)") }
 end
 
 ---@param cmd string[]
