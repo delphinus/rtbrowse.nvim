@@ -1,6 +1,6 @@
-local config = require "nvim-browse.config"
+local config = require "rtbrowse.config"
 
----@class NvimBrowse
+---@class Rtbrowse
 local M = {
   runtime_re = vim.pesc(vim.env.VIMRUNTIME) .. "/(.*)",
 }

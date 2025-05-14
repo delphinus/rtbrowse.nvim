@@ -1,4 +1,4 @@
-# nvim-browse.nvim
+# rtbrowse.nvim
 
 Browse Neovim runtime files on GitHub directly from your editor.
 
@@ -6,7 +6,7 @@ https://github.com/user-attachments/assets/ccad5b02-26a1-46bb-bdbb-a0b1df697b36
 
 ## Introduction
 
-**nvim-browse.nvim** is a Neovim plugin that lets you open the corresponding GitHub source page for any Neovim runtime file and line(s) directly from your editor. It is useful for exploring Neovim's source code, referencing documentation, or sharing links to specific lines.
+**rtbrowse.nvim** is a Neovim plugin that lets you open the corresponding GitHub source page for any Neovim runtime file and line(s) directly from your editor. It is useful for exploring Neovim's source code, referencing documentation, or sharing links to specific lines.
 
 If you use this plugin on files that are not Neovim runtime files, it fallbacks to another action (default: [`Snacks.gitbrowse()`](https://github.com/folke/snacks.nvim/blob/main/docs/gitbrowse.md)). So you can use this plugin without worrying about the file you are viewing.
 
@@ -16,19 +16,19 @@ Use your favorite plugin manager. Example for [lazy.nvim](https://github.com/fol
 
 ```lua
 -- You need no `opts = {}`
-{ "delphinus/nvim-browse.nvim" }
+{ "delphinus/rtbrowse.nvim" }
 ```
 
-Or, setup with full configuration. See [doc](doc/nvim-browse.txt) for the detail.
+Or, setup with full configuration. See [doc](doc/rtbrowse.txt) for the detail.
 
 ```lua
 {
-  "delphinus/nvim-browse.nvim",
+  "delphinus/rtbrowse.nvim",
   -- You may use this plugin with keymaps.
   keys = {
     {
       "<Leader>gB",
-      function() require("nvim-browse").browse() end,
+      function() require("rtbrowse").browse() end,
       mode = { "n", "x", "o" },
     },
   },
@@ -47,7 +47,7 @@ Or, setup with full configuration. See [doc](doc/nvim-browse.txt) for the detail
 To open the current runtime file on GitHub:
 
 ```vim
-:lua require("nvim-browse").browse()
+:lua require("rtbrowse").browse()
 ```
 
 - If you have a visual selection, the selected lines will be highlighted in the GitHub link.
@@ -56,8 +56,8 @@ To open the current runtime file on GitHub:
 Example key mappings:
 
 ```vim
-nnoremap <Leader>gB :lua require("nvim-browse").browse()<CR>
-vnoremap <Leader>gB :lua require("nvim-browse").browse()<CR>
+nnoremap <Leader>gB :lua require("rtbrowse").browse()<CR>
+vnoremap <Leader>gB :lua require("rtbrowse").browse()<CR>
 ```
 
 If the file is not a Neovim runtime file, a fallback action is triggered.

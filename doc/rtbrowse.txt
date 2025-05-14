@@ -1,22 +1,22 @@
-*nvim-browse.txt*			 Browse Neovim runtime files on GitHub
+*rtbrowse.txt*			 Browse Neovim runtime files on GitHub
 
 License: MIT
 
-CONTENTS						   *nvim-browse-contents*
+CONTENTS						     *rtbrowse-contents*
 
-Introduction		|nvim-browse-introduction|
-Installation		|nvim-browse-installation|
-Usage			|nvim-browse-usage|
-Configuration		|nvim-browse-configuration|
-API			|nvim-browse-api|
-FAQ			|nvim-browse-faq|
-Development		|nvim-browse-development|
-Reference		|nvim-browse-reference|
+Introduction		|rtbrowse-introduction|
+Installation		|rtbrowse-installation|
+Usage			|rtbrowse-usage|
+Configuration		|rtbrowse-configuration|
+API			|rtbrowse-api|
+FAQ			|rtbrowse-faq|
+Development		|rtbrowse-development|
+Reference		|rtbrowse-reference|
 
 ==============================================================================
-INTRODUCTION					      *nvim-browse-introduction*
+INTRODUCTION						 *rtbrowse-introduction*
 
-nvim-browse is a Neovim plugin that lets you open the corresponding GitHub
+rtbrowse is a Neovim plugin that lets you open the corresponding GitHub
 source page for any Neovim runtime file and line(s) directly from your editor.
 It is useful for exploring Neovim's source code, referencing documentation,
 or sharing links to specific lines.
@@ -26,22 +26,22 @@ Then it fallbacks to use other plugins (default: |Snacks.gitbrowse()|). So you
 can use this plugin without worrying about the file you are seeing.
 
 ==============================================================================
-INSTALLATION					      *nvim-browse-installation*
+INSTALLATION						 *rtbrowse-installation*
 
 Use your favorite plugin manager. Example for lazy.nvim:
 >lua
     -- You need no `opts = {}`
-    { "delphinus/nvim-browse.nvim" }
+    { "delphinus/rtbrowse.nvim" }
 <
-Or, setup with full configuration. See |nvim-browse-configuration|.
+Or, setup with full configuration. See |rtbrowse-configuration|.
 >lua
     {
-      "delphinus/nvim-browse.nvim",
+      "delphinus/rtbrowse.nvim",
       -- You may use this plugin with keymaps.
       keys = {
 	{
 	  "<Leader>gB",
-	  function() require("nvim-browse").browse() end,
+	  function() require("rtbrowse").browse() end,
 	  mode = { "n", "x", "o" },
 	},
       },
@@ -55,11 +55,11 @@ Or, setup with full configuration. See |nvim-browse-configuration|.
     }
 <
 ==============================================================================
-USAGE							     *nvim-browse-usage*
+USAGE								*rtbrowse-usage*
 
 To open the current runtime file on GitHub:
 >vim
-    :lua require("nvim-browse").browse()
+    :lua require("rtbrowse").browse()
 <
 - If you have a visual selection, the selected lines will be highlighted in the
   GitHub link.
@@ -67,33 +67,33 @@ To open the current runtime file on GitHub:
 
 Example key mappings:
 >vim
-    nnoremap <Leader>gB :lua require("nvim-browse").browse()<CR>
-    vnoremap <Leader>gB :lua require("nvim-browse").browse()<CR>
+    nnoremap <Leader>gB :lua require("rtbrowse").browse()<CR>
+    vnoremap <Leader>gB :lua require("rtbrowse").browse()<CR>
 <
 If the file is not a Neovim runtime file, a fallback action
-|nvim-browse-configuration-fallback| is triggered.
+|rtbrowse-configuration-fallback| is triggered.
 
 ==============================================================================
-CONFIGURATION					     *nvim-browse-configuration*
+CONFIGURATION						*rtbrowse-configuration*
 
-You can configure nvim-browse by passing options to setup():
+You can configure rtbrowse by passing options to setup():
 >lua
-    require("nvim-browse").setup({
+    require("rtbrowse").setup({
       fallback = function()
         -- custom fallback action
       end,
       get_commit = "curl", -- or "gh"
     })
-<					    *nvim-browse-configuration-fallback*
+<					       *rtbrowse-configuration-fallback*
 fallback ~
 
-Default: fallback to |Snacks.gitbrowse()| (See nvim-browse.lua for the detail)
+Default: fallback to |Snacks.gitbrowse()| (See rtbrowse.lua for the detail)
 Type: `fun(): nil`
 
 A Function to call if the file is not a Neovim runtime file. By default, it
 tries to call |Snacks.gitbrowse()| if available.
 
-					  *nvim-browse-configuration-get_commit*
+					      *rtbrowse-configuration-get_commit*
 get_commit ~
 
 Default: `"curl"`
@@ -105,25 +105,25 @@ for an alternative method. See about the link below.
 https://docs.github.com/en/github-cli/github-cli/about-github-cli
 
 ==============================================================================
-API							       *nvim-browse-api*
+API								  *rtbrowse-api*
 
-All functions are exported via `require("nvim-browse").*`.
+All functions are exported via `require("rtbrowse").*`.
 >lua
-    require("nvim-browse").browse()   -- Open current file on GitHub
+    require("rtbrowse").browse()   -- Open current file on GitHub
 <
 ==============================================================================
-FAQ							       *nvim-browse-faq*
+FAQ								  *rtbrowse-faq*
 
 Q: What files can be browsed?
 A: Only files under Neovim runtime directory (e.g. |$VIMRUNTIME|) are supported.
 
 Q: What can occur if the file is not a runtime file?
-A: The fallback function is called (see |nvim-browse-configuration-fallback|).
+A: The fallback function is called (see |rtbrowse-configuration-fallback|).
 
 ==============================================================================
-DEVELOPMENT					       *nvim-browse-development*
+DEVELOPMENT						  *rtbrowse-development*
 
 - Issues and PRs are welcome!
-- Source: https://github.com/delphinus/nvim-browse.nvim
+- Source: https://github.com/delphinus/rtbrowse.nvim
 
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl:noet
