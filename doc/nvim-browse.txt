@@ -37,7 +37,7 @@ Or, setup with full configuration. See |nvim-browse-configuration|.
 >lua
     {
       "delphinus/nvim-browse.nvim",
-      -- You may use this plugin with <Leader>gB keymaps.
+      -- You may use this plugin with keymaps.
       keys = {
 	{
 	  "<Leader>gB",
