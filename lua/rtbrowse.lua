@@ -38,9 +38,20 @@ function M.open(filepath)
   if revision.version then
     open_url(revision.version)
   elseif config.get_commit == "curl" then
-    M.get_commit({ "curl", "https://api.github.com/repos/neovim/neovim/commits/" .. revision.hash }, open_url)
+    M.get_commit({
+      "curl",
+      "-H",
+      "Accept: application/vnd.github.sha",
+      "https://api.github.com/repos/neovim/neovim/commits/" .. revision.hash,
+    }, open_url)
   else
-    M.get_commit({ "gh", "api", "/repos/neovim/neovim/commits/" .. revision.hash }, open_url)
+    M.get_commit({
+      "gh",
+      "api",
+      "-H",
+      "Accept: application/vnd.github.sha",
+      "/repos/neovim/neovim/commits/" .. revision.hash,
+    }, open_url)
   end
 end
 
@@ -48,17 +59,12 @@ end
 ---@param cb fun(rev: string): nil
 function M.get_commit(cmd, cb)
   M.system(cmd, nil, function(out)
-    local ok, json = pcall(vim.json.decode, out.stdout)
-    if not ok then
-      vim.notify("failed to decode response: " .. table.concat(cmd, " "), vim.log.levels.ERROR)
-      return
-    end
-    local sha = json.sha
-    if not sha then
+    local sha = out.stdout
+    if sha and #sha == 40 and sha:match "^[0-9a-f]+$" then
+      cb(sha)
+    else
       vim.notify("cannot found SHA: " .. table.concat(cmd, " "), vim.log.levels.ERROR)
-      return
     end
-    cb(sha)
   end)
 end
 
