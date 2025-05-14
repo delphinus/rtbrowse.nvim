@@ -1,4 +1,11 @@
 local runtime_re = vim.pesc(vim.env.VIMRUNTIME) .. "/(.*)"
+local fallback = function()
+  if Snacks then
+    Snacks.gitbrowse()
+  else
+    vim.notify("snacks.nvim not found. Specify another `fallback` option", vim.log.levels.WARN)
+  end
+end
 
 ---@return { hash?: string, version?: string }
 local function nvim_revision()
@@ -39,9 +46,15 @@ local function open_url(rev, path, start, finish)
   vim.ui.open(("https://github.com/neovim/neovim/blob/%s/runtime/%s#L%d-L%d"):format(rev, path, start, finish))
 end
 
-local function open()
+---@param filename string
+---@return string?
+local function runtime_path()
   local filename = vim.api.nvim_buf_get_name(0)
-  local filepath = filename:match(runtime_re)
+  return (filename:match(runtime_re))
+end
+
+---@param filepath? string
+local function open(filepath)
   if not filepath then
     vim.notify("this is not a file in $VIMRUNTIME", vim.log.levels.DEBUG)
     return
@@ -80,4 +93,13 @@ local function open()
   end
 end
 
-return { open = open }
+local function browse()
+  local filepath = runtime_path()
+  if filepath then
+    open(filepath)
+  else
+    fallback()
+  end
+end
+
+return { browse = browse, open = open }
