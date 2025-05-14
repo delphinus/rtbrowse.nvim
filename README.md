@@ -2,6 +2,8 @@
 
 Browse Neovim runtime files on GitHub directly from your editor.
 
+https://github.com/user-attachments/assets/ccad5b02-26a1-46bb-bdbb-a0b1df697b36
+
 ## Introduction
 
 **nvim-browse.nvim** is a Neovim plugin that lets you open the corresponding GitHub source page for any Neovim runtime file and line(s) directly from your editor. It is useful for exploring Neovim's source code, referencing documentation, or sharing links to specific lines.
