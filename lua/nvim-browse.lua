@@ -46,7 +46,6 @@ local function open_url(rev, path, start, finish)
   vim.ui.open(("https://github.com/neovim/neovim/blob/%s/runtime/%s#L%d-L%d"):format(rev, path, start, finish))
 end
 
----@param filename string
 ---@return string?
 local function runtime_path()
   local filename = vim.api.nvim_buf_get_name(0)
