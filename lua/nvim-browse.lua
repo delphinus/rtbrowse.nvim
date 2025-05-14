@@ -1,24 +1,14 @@
-local runtime_re = vim.pesc(vim.env.VIMRUNTIME) .. "/(.*)"
-local fallback = function()
-  if Snacks then
-    Snacks.gitbrowse()
-  else
-    vim.notify("snacks.nvim not found. Specify another `fallback` option", vim.log.levels.WARN)
-  end
-end
+local config = require "nvim-browse.config"
 
----@return { hash?: string, version?: string }
-local function nvim_revision()
-  local result = vim.api.nvim_exec2("version", { output = true })
-  -- ex: NVIM v0.12.0-dev-5606+gcc78f88201-Homebrew
-  local hash = result.output:match "NVIM v%d+%.%d+%.%d+%-%S+g([0-9a-f]+)"
-  return hash and { hash = hash } or { version = (result.output:match "NVIM (v%d+%.%d+%.%d+)") }
-end
+---@class NvimBrowse
+local M = {
+  runtime_re = vim.pesc(vim.env.VIMRUNTIME) .. "/(.*)",
+}
 
 ---@param cmd string[]
 ---@param opts? vim.SystemOpts
 ---@param on_exit? fun(out: vim.SystemCompleted): nil
-local function system(cmd, opts, on_exit)
+function M.system(cmd, opts, on_exit)
   local timer = vim.uv.new_timer()
   assert(timer)
   local ok, job = pcall(vim.system, cmd, opts, function(out)
@@ -38,67 +28,72 @@ local function system(cmd, opts, on_exit)
   end)
 end
 
----@param rev string
----@param path string
----@param start number
----@param finish number
-local function open_url(rev, path, start, finish)
-  vim.ui.open(("https://github.com/neovim/neovim/blob/%s/runtime/%s#L%d-L%d"):format(rev, path, start, finish))
-end
-
----@return string?
-local function runtime_path()
-  local filename = vim.api.nvim_buf_get_name(0)
-  return (filename:match(runtime_re))
-end
-
----@param filepath? string
-local function open(filepath)
-  if not filepath then
-    vim.notify("this is not a file in $VIMRUNTIME", vim.log.levels.DEBUG)
-    return
+---@param filepath string
+function M.open(filepath)
+  local start, finish = M.get_lines()
+  local function open_url(rev)
+    vim.ui.open(("https://github.com/neovim/neovim/blob/%s/runtime/%s#L%d-L%d"):format(rev, filepath, start, finish))
   end
-  local start, finish
+  local revision = M.get_revision()
+  if revision.version then
+    open_url(revision.version)
+  elseif config.get_commit == "curl" then
+    M.get_commit({ "curl", "https://api.github.com/repos/neovim/neovim/commits/" .. revision.hash }, open_url)
+  else
+    M.get_commit({ "gh", "api", "/repos/neovim/neovim/commits/" .. revision.hash }, open_url)
+  end
+end
+
+---@param cmd string[]
+---@param cb fun(rev: string): nil
+function M.get_commit(cmd, cb)
+  M.system(cmd, nil, function(out)
+    local ok, json = pcall(vim.json.decode, out.stdout)
+    if not ok then
+      vim.notify("failed to decode response: " .. table.concat(cmd, " "), vim.log.levels.ERROR)
+      return
+    end
+    local sha = json.sha
+    if not sha then
+      vim.notify("cannot found SHA: " .. table.concat(cmd, " "), vim.log.levels.ERROR)
+      return
+    end
+    cb(sha)
+  end)
+end
+
+---@return number, number
+function M.get_lines()
   if vim.fn.mode():find "[vV]" then
     vim.fn.feedkeys(":", "nx")
-    local s = vim.api.nvim_buf_get_mark(0, "<")[1]
-    local f = vim.api.nvim_buf_get_mark(0, ">")[1]
+    local start = vim.api.nvim_buf_get_mark(0, "<")[1]
+    local finish = vim.api.nvim_buf_get_mark(0, ">")[1]
     vim.fn.feedkeys("gv", "nx")
-    start = s > f and s or f
-    finish = s > f and f or s
-  else
-    start = vim.fn.line "."
-    finish = start
+    if start > finish then
+      return start, finish
+    end
+    return finish, start
   end
-  local rev = nvim_revision()
-  if rev.version then
-    open_url(rev.version, filepath, start, finish)
-  else
-    system({ "curl", "https://api.github.com/repos/neovim/neovim/commits/" .. rev.hash }, nil, function(out)
-      local sha = vim.json.decode(out.stdout).sha
-      if sha then
-        open_url(sha, filepath, start, finish)
-      else
-        system({ "gh", "api", "/repos/neovim/neovim/commits/" .. rev.hash }, nil, function(out)
-          local sha = vim.json.decode(out.stdout).sha
-          if sha then
-            open_url(sha, filepath, start, finish)
-          else
-            vim.notify("failed to fetch with curl and gh", vim.log.levels.ERROR)
-          end
-        end)
-      end
-    end)
-  end
+  local start = vim.fn.line "."
+  return start, start
 end
 
-local function browse()
-  local filepath = runtime_path()
+---@return { hash?: string, version?: string }
+function M.get_revision()
+  local result = vim.api.nvim_exec2("version", { output = true })
+  -- ex: NVIM v0.12.0-dev-5606+gcc78f88201-Homebrew
+  local hash = result.output:match "NVIM v%d+%.%d+%.%d+%-%S+g([0-9a-f]+)"
+  return hash and { hash = hash } or { version = (result.output:match "NVIM (v%d+%.%d+%.%d+)") }
+end
+
+function M.browse()
+  local filename = vim.api.nvim_buf_get_name(0)
+  local filepath = (filename:match(M.runtime_re))
   if filepath then
-    open(filepath)
+    M.open(filepath)
   else
-    fallback()
+    config.fallback()
   end
 end
 
-return { browse = browse, open = open }
+return M
