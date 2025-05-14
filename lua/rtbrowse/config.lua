@@ -1,4 +1,4 @@
----@class NvimBrowseConfig
+---@class RtbrowseConfig
 ---@field fallback fun(): nil default: A function to call Snacks.gitbrowse
 ---@field get_commit "curl"|"gh" default: "curl"
 local M = {
@@ -12,10 +12,10 @@ local M = {
   get_commit = "curl",
 }
 
----@class NvimBrowseOpts
+---@class RtbrowseOpts
 ---@field fallback? fun(): nil
 
----@param opts? NvimBrowseOpts
+---@param opts? RtbrowseOpts
 M.setup = function(opts)
   M = vim.tbl_extend("force", M, opts or {})
 end
