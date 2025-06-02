@@ -3,6 +3,7 @@ local config = require "rtbrowse.config"
 ---@class Rtbrowse
 local M = {
   runtime_re = vim.pesc(vim.env.VIMRUNTIME) .. "/(.*)",
+  setup = config.setup,
 }
 
 ---@param cmd string[]
@@ -37,6 +38,8 @@ function M.open(filepath)
   local revision = M.get_revision()
   if revision.version then
     open_url(revision.version)
+  elseif not config.get_commit then
+    open_url(revision.hash)
   elseif config.get_commit == "curl" then
     M.get_commit({
       "curl",
